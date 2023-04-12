@@ -12,7 +12,10 @@ type Book = {
 
 const index = async (req: Request, res: Response) => {
   try {
-    const books: Book[] = await knexInstance("books").select("*");
+    const books: Book[] = await knexInstance("books")
+      .select("books.name", "authors.name as author")
+      .join("authors", "authors.id", "=", "books.author_id");
+
     res.status(200).json(books);
   } catch (error) {
     res.send(error);
@@ -22,10 +25,14 @@ const index = async (req: Request, res: Response) => {
 const show = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const book = await knexInstance("books").select("*").where({ id });
+    const book: Book[] = await knexInstance("books")
+      .select("books.name", "authors.name as author")
+      .join("authors", "authors.id", "=", "books.author_id")
+      .where({ "books.id": id });
+
     if (!book.length) throw new Error("Esse livro não existe");
 
-    res.status(200).json(book);
+    res.status(200).json(book[0]);
   } catch (error: any) {
     res.send(error.message ? { error: error.message } : error);
   }
@@ -56,11 +63,21 @@ const update = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const { name, author } = req.body;
-    const updatedData: Book = { name, author };
+    const updateData: any = { name };
+    if (author) {
+      const authorData = await knexInstance("authors")
+        .select("id")
+        .where({ name: author });
 
-    const book = await knexInstance("books").update(updatedData).where({ id });
+      if (!authorData[0]) {
+        throw new Error("Autor não existe");
+      }
+      updateData.author_id = authorData[0].id;
+    }
 
-    res.status(200).json(book);
+    await knexInstance("books").update(updateData).where({ id });
+
+    res.status(200).json({ name, author });
   } catch (error: any) {
     res.send(error.message ? { error: error.message } : error);
   }
