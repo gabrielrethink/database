@@ -4,16 +4,16 @@ import config from "../../knexfile";
 
 const knexInstance = knex(config);
 
-type Book = {
+type Author = {
   id?: number;
   name: string;
-  author: string;
+  bestSeller?: string;
 };
 
 const index = async (req: Request, res: Response) => {
   try {
-    const books: Book[] = await knexInstance("books").select("*");
-    res.status(200).json(books);
+    const authors: Author[] = await knexInstance("authors").select("*");
+    res.status(200).json(authors);
   } catch (error) {
     res.send(error);
   }
@@ -22,10 +22,10 @@ const index = async (req: Request, res: Response) => {
 const show = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const book = await knexInstance("books").select("*").where({ id });
-    if (!book.length) throw new Error("Esse livro não existe");
+    const author = await knexInstance("authors").select("*").where({ id });
+    if (!author.length) throw new Error("Esse autor não existe");
 
-    res.status(200).json(book);
+    res.status(200).json(author);
   } catch (error: any) {
     res.send(error.message ? { error: error.message } : error);
   }
@@ -33,21 +33,15 @@ const show = async (req: Request, res: Response) => {
 
 const insert = async (req: Request, res: Response) => {
   try {
-    const { name, author } = req.body;
+    const { name, bestSeller } = req.body;
 
-    const findAuthor = await knexInstance("authors")
-      .select("id")
-      .where({ name: author });
-
-    const authorId = findAuthor[0].id;
-
-    const id: number[] = await knexInstance("books").insert({
+    const id: number[] = await knexInstance("authors").insert({
       name,
-      author_id: authorId,
+      bestSeller,
     });
 
-    res.status(201).json({ id: id[0], name, author });
-  } catch (error) {
+    res.status(201).json({ id: id[0], name, bestSeller });
+  } catch (error: any) {
     res.send(error);
   }
 };
@@ -55,10 +49,12 @@ const insert = async (req: Request, res: Response) => {
 const update = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const { name, author } = req.body;
-    const updatedData: Book = { name, author };
+    const { name, bestSeller } = req.body;
+    const updatedData: Author = { name, bestSeller };
 
-    const book = await knexInstance("books").update(updatedData).where({ id });
+    const book = await knexInstance("authors")
+      .update(updatedData)
+      .where({ id });
 
     res.status(200).json(book);
   } catch (error: any) {
@@ -69,7 +65,7 @@ const update = async (req: Request, res: Response) => {
 const remove = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const book = await knexInstance("books").delete().where({ id });
+    const book = await knexInstance("authors").delete().where({ id });
 
     if (!book) throw new Error("Esse livro não existe");
 
