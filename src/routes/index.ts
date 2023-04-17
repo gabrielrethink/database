@@ -1,10 +1,8 @@
-import { router as booksRoutes } from "./books";
-import { router as authorsRoutes } from "./authors";
 import { Router } from "express";
+import { router as productsRouter } from "./products";
 
 const router: Router = Router();
 
-router.use("/books", booksRoutes);
-router.use("/authors", authorsRoutes);
+router.use("/products", productsRouter);
 
 export { router };

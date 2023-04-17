@@ -7,11 +7,13 @@ const port = 3000;
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("API V1 is running");
+  res.send(
+    "Fake store rest API for your e-commerce or shopping website prototype"
+  );
 });
 
-app.use("/api/v1", router);
+app.use("/", router);
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`listening on port ${port}`);
 });
