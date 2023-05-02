@@ -7,6 +7,7 @@ const router: Router = Router();
 router.use("/categories", categories);
 router.use("/category", category);
 router.get("/", productsController.index);
+router.post("/", productsController.insert);
 router.put("/:id", productsController.update);
 
 export { router };

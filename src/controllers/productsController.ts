@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import knex from "knex";
 import knexFile from "../../knexfile";
 
+import productService from "../services/productService";
+
 const knexInstance = knex(knexFile);
 const index = async (req: Request, res: Response) => {
   try {
@@ -58,4 +60,14 @@ const update = async (req: Request, res: Response) => {
   }
 };
 
-export default { index, update };
+const insert = async (req: Request, res: Response) => {
+  try {
+    const product = req.body;
+    const newProduct = await productService.createProduct(product);
+    res.status(200).json({ id: newProduct[0], ...product });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export default { index, update, insert };
