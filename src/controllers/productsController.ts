@@ -3,9 +3,9 @@ import knex from "knex";
 import knexFile from "../../knexfile";
 
 import productService from "../services/productService";
-import { ErrorType } from "../middlewares/errorHandler";
 
 const knexInstance = knex(knexFile);
+
 const index = async (req: Request, res: Response) => {
   try {
     const products = await knexInstance("products")
@@ -36,28 +36,18 @@ const index = async (req: Request, res: Response) => {
   }
 };
 
-const update = async (req: Request, res: Response) => {
+const update = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const updatedProduct = req.body;
+    const product = req.body;
+    const productId = Number(req.params.id);
+    const updatedProduct = await productService.patchProduct(
+      productId,
+      product
+    );
 
-    if (updatedProduct.category) {
-      const category = await knexInstance("categories")
-        .select("*")
-        .where({ name: updatedProduct.category });
-      if (category[0].id) {
-        updatedProduct.category_id = category[0].id;
-      }
-    }
-
-    delete updatedProduct.category;
-
-    await knexInstance("products")
-      .update(updatedProduct)
-      .where({ id: req.params.id });
-
-    res.send({ msg: "productUpdated" });
-  } catch (error: any) {
-    console.log(error.message);
+    res.status(200).json(updatedProduct);
+  } catch (error: unknown) {
+    next(error);
   }
 };
 

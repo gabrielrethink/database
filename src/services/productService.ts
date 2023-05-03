@@ -33,4 +33,34 @@ const createProduct = async (product: ProductParams) => {
   return insertedProduct;
 };
 
-export default { createProduct };
+const patchProduct = async (productId: number, product: any) => {
+  const newProduct = { ...product, ...product.rating };
+  delete newProduct.rating;
+  delete newProduct.category;
+
+  let categoryId;
+
+  if (product.category) {
+    const category = await Repositories.verifyCategory(product.category!);
+
+    if (category.length === 0) {
+      throw makeError({ message: "Categoria não existe", status: 400 });
+    }
+
+    categoryId = category[0].id;
+  }
+
+  await Repositories.updateProduct(
+    {
+      ...newProduct,
+      category_id: product.category ? categoryId : undefined,
+    },
+    productId
+  );
+
+  const productFromDatabase = await Repositories.selectAProduct(productId);
+
+  return productFromDatabase;
+};
+
+export default { createProduct, patchProduct };
