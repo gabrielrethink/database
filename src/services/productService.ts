@@ -1,4 +1,5 @@
 import Repositories from "../repositories/Repositories";
+import { makeError } from "../middlewares/errorHandler";
 
 type ProductParams = {
   title: string;
@@ -21,7 +22,8 @@ const createProduct = async (product: ProductParams) => {
 
   const categoryId = await Repositories.verifyCategory(product.category!);
 
-  if (categoryId.length === 0) throw new Error("Categoria não existe");
+  if (categoryId.length === 0)
+    throw makeError({ message: "Categoria não existe", status: 400 });
 
   const insertedProduct = await Repositories.insertProduct({
     ...newProduct,

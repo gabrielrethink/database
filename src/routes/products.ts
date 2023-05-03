@@ -1,6 +1,8 @@
-import { Router } from "express";
+import { NextFunction, Router } from "express";
 import { categories, category } from "./categories";
 import productsController from "../controllers/productsController";
+
+import { Request, Response } from "express";
 
 const router: Router = Router();
 
