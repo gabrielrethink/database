@@ -1,6 +1,8 @@
 import { errorHandler } from "./middlewares/errorHandler";
 import express, { Response, Request } from "express";
 import { router } from "./routes";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 const port = 3000;
