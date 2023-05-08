@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import knex from "knex";
 import knexFile from "../../knexfile";
-
 import productService from "../services/productService";
-
 const knexInstance = knex(knexFile);
 
 const index = async (req: Request, res: Response) => {
@@ -56,7 +54,7 @@ const insert = async (req: Request, res: Response, next: NextFunction) => {
     const product = req.body;
     const newProduct = await productService.createProduct(product);
 
-    res.status(200).json({ id: newProduct[0], ...product });
+    res.status(200).json(newProduct);
   } catch (error: unknown) {
     next(error);
   }

@@ -30,7 +30,7 @@ const createProduct = async (product: ProductParams) => {
     category_id: categoryId[0].id,
   });
 
-  return insertedProduct;
+  return { id: insertedProduct[0], ...product };
 };
 
 const patchProduct = async (productId: number, product: any) => {
