@@ -1,10 +1,10 @@
-import { router as booksRoutes } from "./books";
-import { router as authorsRoutes } from "./authors";
 import { Router } from "express";
+import { router as productsRouter } from "./products";
+import { router as authRouter } from "./auth";
 
 const router: Router = Router();
 
-router.use("/books", booksRoutes);
-router.use("/authors", authorsRoutes);
+router.use("/products", productsRouter);
+router.use("/login", authRouter);
 
 export { router };
